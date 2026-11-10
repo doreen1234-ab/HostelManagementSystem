@@ -1,6 +1,7 @@
 package hostel.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -17,6 +18,8 @@ public class FeePayment {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    @Min(value = 1, message = "Amount must be greater than zero")
+    @Column(name = "amount")
     private BigDecimal amount;
 
     @Column(name = "payment_date")

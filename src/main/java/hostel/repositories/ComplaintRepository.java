@@ -9,4 +9,6 @@ import java.util.List;
 public interface ComplaintRepository extends JpaRepository<Complaint, Integer> {
     // Custom Query 7: Find complaints that are not resolved
     List<Complaint> findByStatusNot(String status);
+    
+    List<Complaint> findByCategoryContainingIgnoreCase(String category);
 }

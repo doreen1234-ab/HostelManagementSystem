@@ -7,9 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+    <%@ include file="../navbar.jsp" %>
     <div class="container mt-5">
         <h1 class="mb-4">System Reports</h1>
-        <a href="/" class="btn btn-secondary mb-3">Back to Dashboard</a>
+
 
         <!-- Tab Navigation -->
         <ul class="nav nav-tabs mb-3" id="reportTabs" role="tablist">
@@ -74,4 +75,5 @@
     <!-- Bootstrap JS for Tabs -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

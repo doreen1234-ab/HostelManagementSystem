@@ -1,5 +1,6 @@
 package hostel.controllers;
 
+import org.springframework.transaction.annotation.Transactional;
 import hostel.models.LeaveRequest;
 import hostel.models.Student;
 import hostel.models.Warden;
@@ -53,14 +54,20 @@ public class LeaveRequestController {
         return "redirect:/leaves";
     }
 
-    // This is the Approval Workflow!
+    @Transactional
     @GetMapping("/approve/{id}")
     public String approveLeave(@PathVariable("id") Integer id) {
         LeaveRequest leave = leaveRepo.findById(id).orElseThrow();
+        
+        // RULE CHECK: Only approve if Pending
+        if (!"Pending".equals(leave.getStatus())) {
+            return "redirect:/leaves?error=AlreadyProcessed";
+        }
+        
         Warden warden = wardenRepo.findById(1).orElse(null);
         leave.setWarden(warden);
         leave.setStatus("Approved");
         leaveRepo.save(leave);
         return "redirect:/leaves";
+    	}
     }
-}

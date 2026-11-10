@@ -7,13 +7,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+    <%@ include file="../navbar.jsp" %>
     <div class="container mt-5">
         <h1 class="mb-4">Students</h1>
-        <a href="/" class="btn btn-secondary mb-3">Back to Dashboard</a>
         
+        <!-- Navigation Buttons -->
+        <div class="mb-3">
+
+            <a href="/students/new" class="btn btn-primary">Add Student</a>
+        </div>
+
         <div class="card">
             <div class="card-body">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th>
@@ -28,6 +34,7 @@
                                 </a>
                             </th>
                             <th>Year</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,6 +44,11 @@
                                 <td>${student.email}</td>
                                 <td>${student.department}</td>
                                 <td>${student.yearOfStudy}</td>
+                                <!-- THIS IS THE FIX: The buttons go here in a <td> -->
+                                <td>
+                                    <a href="/students/edit/${student.studentId}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="/students/delete/${student.studentId}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
@@ -44,7 +56,7 @@
 
                 <!-- Pagination Controls -->
                 <nav>
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center mt-3">
                         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
                             <a class="page-link" href="/students/page/${currentPage - 1}?sortField=${sortField}&sortDir=${sortDir}">Previous</a>
                         </li>
@@ -66,4 +78,5 @@
         </div>
     </div>
 </body>
+
 </html>

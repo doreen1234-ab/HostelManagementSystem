@@ -25,8 +25,15 @@ public class ComplaintController {
     }
 
     @GetMapping
-    public String listComplaints(Model model) {
-        model.addAttribute("complaints", complaintRepository.findAll());
+    public String listComplaints(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<Complaint> complaints;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            complaints = complaintRepository.findByCategoryContainingIgnoreCase(keyword.trim());
+        } else {
+            complaints = complaintRepository.findAll();
+        }
+        model.addAttribute("complaints", complaints);
+        model.addAttribute("keyword", keyword);
         return "complaints/list";
     }
 

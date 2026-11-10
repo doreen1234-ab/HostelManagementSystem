@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class AllocationService {
@@ -24,29 +25,33 @@ public class AllocationService {
 
     @Transactional
     public String allocateRoom(Integer studentId, Integer roomId) {
-        // Business Rule 1: Student must exist
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
+                .orElseThrow(() -> new RuntimeException("Student not found: " + studentId));
 
-        // Business Rule 2: Room must exist
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found with ID: " + roomId));
+                .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
 
-        // Business Rule 3: Room must not be Full or Maintenance
-        if ("Full".equals(room.getStatus()) || "Maintenance".equals(room.getStatus())) {
-            throw new RuntimeException("Room is not available for allocation.");
+        if ("Maintenance".equals(room.getStatus())) {
+            throw new RuntimeException("Room is under maintenance.");
         }
 
-        // Business Rule 4: Student must not already have an active allocation
-        boolean hasActiveAllocation = allocationRepository.findByActiveTrue()
-                .stream()
+        // CHECK 1: Student already has active allocation?
+        boolean hasActive = allocationRepository.findByActiveTrue().stream()
                 .anyMatch(a -> a.getStudent().getStudentId().equals(studentId));
-        
-        if (hasActiveAllocation) {
-            throw new RuntimeException("Student already has an active room allocation.");
+        if (hasActive) {
+            throw new RuntimeException("Student already has an active allocation.");
         }
 
-      
+        // CHECK 2: Room capacity 
+        Integer capacity = room.getRoomType().getCapacity();
+        long currentOccupancy = allocationRepository.findByActiveTrue().stream()
+                .filter(a -> a.getRoom().getRoomId().equals(roomId))
+                .count();
+        if (currentOccupancy >= capacity) {
+            throw new RuntimeException("Room is at full capacity (" + capacity + ").");
+        }
+
+        // Save allocation
         Allocation allocation = new Allocation();
         allocation.setStudent(student);
         allocation.setRoom(room);
@@ -54,11 +59,12 @@ public class AllocationService {
         allocation.setActive(true);
         allocationRepository.save(allocation);
 
-     
-        room.setStatus("Full"); 
-        roomRepository.save(room);
+        // Update room status if now full
+        if ((currentOccupancy + 1) >= capacity) {
+            room.setStatus("Full");
+            roomRepository.save(room);
+        }
 
-       
         return "Success";
     }
 }

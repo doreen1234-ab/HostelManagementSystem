@@ -8,9 +8,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="bg-light">
+    <%@ include file="../navbar.jsp" %>
     <div class="container mt-5">
+    
         <h1>Allocate Room</h1>
-        <a href="/" class="btn btn-secondary mb-3">Back to Dashboard</a>
 
         <div class="card">
             <div class="card-body">

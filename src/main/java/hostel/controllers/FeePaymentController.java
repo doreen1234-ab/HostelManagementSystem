@@ -1,14 +1,14 @@
 package hostel.controllers;
 
 import hostel.models.FeePayment;
-import hostel.models.Student;
 import hostel.repositories.FeePaymentRepository;
 import hostel.repositories.StudentRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
 @RequestMapping("/payments")
@@ -34,15 +34,16 @@ public class FeePaymentController {
     }
 
     @PostMapping("/save")
-    public String savePayment(@RequestParam("studentId") Integer studentId,
-                              @RequestParam("amount") BigDecimal amount,
-                              @RequestParam("paymentMode") String paymentMode) {
-        FeePayment payment = new FeePayment();
+    public String savePayment(@Valid @ModelAttribute FeePayment payment, BindingResult result, 
+                              @RequestParam("studentId") Integer studentId, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("students", studentRepo.findAll());
+            return "payments/form";
+        }
         payment.setStudent(studentRepo.findById(studentId).orElseThrow());
-        payment.setAmount(amount);
         payment.setPaymentDate(LocalDate.now());
-        payment.setPaymentMode(paymentMode);
         paymentRepo.save(payment);
         return "redirect:/payments";
     }
+
 }
