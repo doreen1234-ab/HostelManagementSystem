@@ -74,6 +74,7 @@
     
     <!-- Bootstrap JS for Tabs -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+	<%@ include file="/WEB-INF/jsp/footer.jsp" %>
+	</body>
 
 </html>

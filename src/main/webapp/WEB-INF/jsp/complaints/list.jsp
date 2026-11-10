@@ -10,11 +10,17 @@
     <%@ include file="../navbar.jsp" %>
     <div class="container mt-5">
         <h1 class="mb-4">Complaints</h1>
-		<!-- Search Form -->
-		<form method="get" action="/complaints" class="mb-3 d-flex" style="max-width: 400px;">
-		    <input type="text" name="keyword" class="form-control me-2" placeholder="Search by category (e.g. Electrical)..." value="${keyword}">
-		    <button type="submit" class="btn btn-primary">Search</button>
-		</form>
+
+        <!-- Error Alert -->
+        <c:if test="${param.error == 'InvalidStudent'}">
+            <div class="alert alert-danger">The selected student was not found.</div>
+        </c:if>
+
+        <!-- Search Form -->
+        <form method="get" action="/complaints" class="mb-3 d-flex" style="max-width: 400px;">
+            <input type="text" name="keyword" class="form-control me-2" placeholder="Search by category (e.g. Electrical)..." value="${keyword}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
         <a href="/complaints/new" class="btn btn-primary mb-3">File New Complaint</a>
         
         <table class="table table-bordered table-striped">
@@ -49,6 +55,6 @@
             </tbody>
         </table>
     </div>
+	<%@ include file="/WEB-INF/jsp/footer.jsp" %>
 </body>
-
 </html>

@@ -63,5 +63,6 @@
             <a href="/payments" class="btn btn-outline-success">Fee Payments</a>
         </div>
     </div>
+	<%@ include file="footer.jsp" %>
 </body>
 </html>

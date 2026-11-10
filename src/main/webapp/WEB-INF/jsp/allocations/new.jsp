@@ -110,6 +110,7 @@
 	            alert('Please fill in all fields.');
 	        }
 	    }
-	</script>	
+	</script>
+	<%@ include file="/WEB-INF/jsp/footer.jsp" %>	
 </body>
 </html>

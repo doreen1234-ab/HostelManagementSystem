@@ -11,9 +11,14 @@
     <div class="container mt-5">
         <h1 class="mb-4">Students</h1>
         
+        <!-- Search Form -->
+        <form method="get" action="/students" class="mb-3 d-flex" style="max-width: 400px;">
+            <input type="text" name="keyword" class="form-control me-2" placeholder="Search by name..." value="${keyword}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
         <!-- Navigation Buttons -->
         <div class="mb-3">
-
             <a href="/students/new" class="btn btn-primary">Add Student</a>
         </div>
 
@@ -44,7 +49,6 @@
                                 <td>${student.email}</td>
                                 <td>${student.department}</td>
                                 <td>${student.yearOfStudy}</td>
-                                <!-- THIS IS THE FIX: The buttons go here in a <td> -->
                                 <td>
                                     <a href="/students/edit/${student.studentId}" class="btn btn-sm btn-warning">Edit</a>
                                     <a href="/students/delete/${student.studentId}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
@@ -77,6 +81,6 @@
             </div>
         </div>
     </div>
+	<%@ include file="/WEB-INF/jsp/footer.jsp" %>
 </body>
-
 </html>

@@ -55,19 +55,20 @@ public class LeaveRequestController {
     }
 
     @Transactional
-    @GetMapping("/approve/{id}")
-    public String approveLeave(@PathVariable("id") Integer id) {
+    @PostMapping("/approve/{id}")
+    public String approveLeave(@PathVariable("id") Integer id, 
+                               @RequestParam("wardenId") Integer wardenId) {
         LeaveRequest leave = leaveRepo.findById(id).orElseThrow();
         
-        // RULE CHECK: Only approve if Pending
+        // Rule check: only Pending requests can be approved
         if (!"Pending".equals(leave.getStatus())) {
             return "redirect:/leaves?error=AlreadyProcessed";
         }
         
-        Warden warden = wardenRepo.findById(1).orElse(null);
+        Warden warden = wardenRepo.findById(wardenId).orElse(null);
         leave.setWarden(warden);
         leave.setStatus("Approved");
         leaveRepo.save(leave);
         return "redirect:/leaves";
-    	}
+    }
     }

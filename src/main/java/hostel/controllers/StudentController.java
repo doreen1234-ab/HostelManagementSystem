@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/students")
 public class StudentController {
@@ -21,23 +23,32 @@ public class StudentController {
     }
 
     @GetMapping
-    public String listStudents(Model model) {
-        return getPaginatedStudents(1, "name", "asc", model);
-    }
-
-    @GetMapping("/page/{pageNo}")
-    public String getPaginatedStudents(@PathVariable(value = "pageNo") int pageNo,
-                                       @RequestParam(value = "sortField", defaultValue = "name") String sortField,
-                                       @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir,
-                                       Model model) {
-        Page<Student> page = studentService.getPaginatedStudents(pageNo, sortField, sortDir);
-        model.addAttribute("currentPage", pageNo);
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("totalItems", page.getTotalElements());
+    public String listStudents(@RequestParam(value = "keyword", required = false) String keyword,
+                               @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+                               @RequestParam(value = "sortField", defaultValue = "name") String sortField,
+                               @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir,
+                               Model model) {
+        
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // Search mode (no pagination for simplicity)
+            List<Student> results = studentRepository.findByNameContainingIgnoreCase(keyword.trim());
+            model.addAttribute("students", results);
+            model.addAttribute("currentPage", 1);
+            model.addAttribute("totalPages", 1);
+            model.addAttribute("totalItems", results.size());
+        } else {
+            // Pagination mode
+            Page<Student> page = studentService.getPaginatedStudents(pageNo, sortField, sortDir);
+            model.addAttribute("students", page.getContent());
+            model.addAttribute("currentPage", pageNo);
+            model.addAttribute("totalPages", page.getTotalPages());
+            model.addAttribute("totalItems", page.getTotalElements());
+        }
+        
         model.addAttribute("sortField", sortField);
         model.addAttribute("sortDir", sortDir);
         model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-        model.addAttribute("students", page.getContent());
+        model.addAttribute("keyword", keyword);
         return "students/list";
     }
 
