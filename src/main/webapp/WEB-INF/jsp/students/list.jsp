@@ -28,13 +28,13 @@
                     <thead class="table-dark">
                         <tr>
                             <th>
-                                <a href="/students/page/1?sortField=name&sortDir=${reverseSortDir}" class="text-white text-decoration-none">
+                                <a href="/students?sortField=name&sortDir=${reverseSortDir}" class="text-white text-decoration-none">
                                     Name ${sortField == 'name' ? (sortDir == 'asc' ? '↑' : '↓') : ''}
                                 </a>
                             </th>
                             <th>Email</th>
                             <th>
-                                <a href="/students/page/1?sortField=department&sortDir=${reverseSortDir}" class="text-white text-decoration-none">
+                                <a href="/students?sortField=department&sortDir=${reverseSortDir}" class="text-white text-decoration-none">
                                     Department ${sortField == 'department' ? (sortDir == 'asc' ? '↑' : '↓') : ''}
                                 </a>
                             </th>
@@ -62,17 +62,17 @@
                 <nav>
                     <ul class="pagination justify-content-center mt-3">
                         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                            <a class="page-link" href="/students/page/${currentPage - 1}?sortField=${sortField}&sortDir=${sortDir}">Previous</a>
+                            <a class="page-link" href="/students?pageNo=${currentPage - 1}&sortField=${sortField}&sortDir=${sortDir}">Previous</a>
                         </li>
                         
                         <c:forEach begin="1" end="${totalPages}" var="i">
                             <li class="page-item ${currentPage == i ? 'active' : ''}">
-                                <a class="page-link" href="/students/page/${i}?sortField=${sortField}&sortDir=${sortDir}">${i}</a>
+                                <a class="page-link" href="/students?pageNo=${i}&sortField=${sortField}&sortDir=${sortDir}">${i}</a>
                             </li>
                         </c:forEach>
 
                         <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                            <a class="page-link" href="/students/page/${currentPage + 1}?sortField=${sortField}&sortDir=${sortDir}">Next</a>
+                            <a class="page-link" href="/students?pageNo=${currentPage + 1}&sortField=${sortField}&sortDir=${sortDir}">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -81,6 +81,6 @@
             </div>
         </div>
     </div>
-	<%@ include file="/WEB-INF/jsp/footer.jsp" %>
+    <%@ include file="../footer.jsp" %>
 </body>
 </html>
