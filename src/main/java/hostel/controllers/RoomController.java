@@ -6,6 +6,10 @@ import hostel.models.RoomType;
 import hostel.repositories.HostelBlockRepository;
 import hostel.repositories.RoomRepository;
 import hostel.repositories.RoomTypeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,22 +33,41 @@ public class RoomController {
     }
 
     @GetMapping
-    public String listRooms(Model model) {
-        model.addAttribute("rooms", roomRepository.findAll());
+    public String listRooms(@RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+                            @RequestParam(value = "sortField", defaultValue = "roomId") String sortField,
+                            @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir,
+                            Model model) {
+        
+        Sort sort = sortDir.equalsIgnoreCase("asc") 
+                    ? Sort.by(sortField).ascending() 
+                    : Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, sort);
+        Page<Room> page = roomRepository.findAll(pageable);
+
+        model.addAttribute("rooms", page.getContent());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalItems", page.getTotalElements());
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
         return "rooms/list";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        populateForm(model, new Room());
+        model.addAttribute("room", new Room());
+        model.addAttribute("blocks", blockRepository.findAll()); 
+        model.addAttribute("roomTypes", roomTypeRepository.findAll()); 
         return "rooms/form";
     }
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model) {
-        Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid room Id:" + id));
-        populateForm(model, room);
+        Room room = roomRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid room Id:" + id));
+        model.addAttribute("room", room);
+        model.addAttribute("blocks", blockRepository.findAll()); 
+        model.addAttribute("roomTypes", roomTypeRepository.findAll()); 
         return "rooms/form";
     }
 
@@ -52,34 +75,23 @@ public class RoomController {
     public String saveRoom(
             @RequestParam(value = "roomId", required = false) Integer roomId,
             @RequestParam("roomNumber") String roomNumber,
-            @RequestParam(value = "blockId", required = false) Integer blockId,
-            @RequestParam(value = "roomTypeId", required = false) Integer roomTypeId,
-            @RequestParam("status") String status,
-            Model model) {
+            @RequestParam("blockId") Integer blockId,
+            @RequestParam("roomTypeId") Integer roomTypeId,
+            @RequestParam("status") String status) {
 
-        Room room = (roomId != null)
-                ? roomRepository.findById(roomId).orElse(new Room())
-                : new Room();
+        Room room = new Room();
+        if (roomId != null) {
+            room = roomRepository.findById(roomId).orElse(new Room());
+        }
 
         room.setRoomNumber(roomNumber);
         room.setStatus(status);
 
-        Optional<HostelBlock> block = (blockId != null)
-                ? blockRepository.findById(blockId) : Optional.empty();
-        Optional<RoomType> roomType = (roomTypeId != null)
-                ? roomTypeRepository.findById(roomTypeId) : Optional.empty();
+        HostelBlock block = blockRepository.findById(blockId).orElse(null);
+        RoomType roomType = roomTypeRepository.findById(roomTypeId).orElse(null);
 
-        if (block.isEmpty() || roomType.isEmpty()) {
-                   String error = block.isEmpty()
-                    ? "Please select a valid hostel block."
-                    : "Please select a valid room type.";
-            model.addAttribute("error", error);
-            populateForm(model, room);
-            return "rooms/form";
-        }
-
-        room.setBlock(block.get());
-        room.setRoomType(roomType.get());
+        room.setBlock(block);
+        room.setRoomType(roomType);
 
         roomRepository.save(room);
         return "redirect:/rooms";
@@ -89,11 +101,5 @@ public class RoomController {
     public String deleteRoom(@PathVariable("id") Integer id) {
         roomRepository.deleteById(id);
         return "redirect:/rooms";
-    }
-
-    private void populateForm(Model model, Room room) {
-        model.addAttribute("room", room);
-        model.addAttribute("blocks", blockRepository.findAll());
-        model.addAttribute("roomTypes", roomTypeRepository.findAll());
     }
 }
