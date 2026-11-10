@@ -1,0 +1,42 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hostel Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="mb-4">Hostel Management Dashboard</h1>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Students</h5>
+                        <h2 class="card-text">${totalStudents}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Rooms</h5>
+                        <h2 class="card-text">${totalRooms}</h2>
+                    </div>
+                </div>
+            </div>
+			    </div>
+			    
+			    <div class="mt-4">
+			        <a href="/students" class="btn btn-outline-primary">Manage Students</a>
+			        <a href="/rooms" class="btn btn-outline-success">Manage Rooms</a>
+			        <a href="/allocations/new" class="btn btn-outline-warning">Allocate Room (AJAX)</a>
+			        <a href="/complaints" class="btn btn-outline-danger">Manage Complaints</a>
+					<a href="/reports" class="btn btn-outline-info">View Reports</a>
+					<a href="/wardens" class="btn btn-outline-dark">Wardens</a>
+					<a href="/leaves" class="btn btn-outline-info">Leave Requests</a>
+					<a href="/payments" class="btn btn-outline-success">Fee Payments</a>
+			    </div>
+			</div>
+</body>
+</html>
