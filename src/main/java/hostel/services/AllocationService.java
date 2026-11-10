@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class AllocationService {
@@ -31,8 +30,9 @@ public class AllocationService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
 
-        if ("Maintenance".equals(room.getStatus())) {
-            throw new RuntimeException("Room is under maintenance.");
+        // Rule: reject Maintenance AND Full rooms
+        if ("Maintenance".equals(room.getStatus()) || "Full".equals(room.getStatus())) {
+            throw new RuntimeException("Room is not available for allocation.");
         }
 
         // CHECK 1: Student already has active allocation?
@@ -42,7 +42,7 @@ public class AllocationService {
             throw new RuntimeException("Student already has an active allocation.");
         }
 
-        // CHECK 2: Room capacity 
+        // CHECK 2: Room capacity
         Integer capacity = room.getRoomType().getCapacity();
         long currentOccupancy = allocationRepository.findByActiveTrue().stream()
                 .filter(a -> a.getRoom().getRoomId().equals(roomId))
